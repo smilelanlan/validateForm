@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>普通页面表单验证</title>
+</head>
+<body>
+<form id="myform" method="post">
+    <p>
+        <label for="myname">用户名：</label>
+        <input id="myname" name="myname" />
+    </p>
+    <p>
+        <label for="phone">手机号：</label>
+        <input id="phone" name="phone" />
+    </p>
+    <p>
+        <label for="email">E-Mail：</label>
+        <input id="email" name="email" />
+    </p>
+    <p>
+        <label for="password">登陆密码：</label>
+        <input id="password" name="password" type="password"/>
+    </p>
+    <p>
+        <label for="confirm_password">确认密码：</label>
+        <input id="confirm_password" name="confirm_password" type="password"/>
+    </p>
+    <p>
+        <span>性别：</span>
+        <span for="gender_male">男</span>
+        <input  type="radio" id="gender_male" value="m" name="gender"/>
+        <label for="gender_female">女</label>
+        <input  type="radio" id="gender_female" value="f" name="gender"/>
+    </p>
+    <p>
+        <span>有无工作经验：</span>
+        <span for="accept_no">有</span>
+        <input  type="radio" id="accept_yes" value="1" name="accept"/>
+        <label for="accept_no">无</label>
+        <input  type="radio" id="accept_no" value="2" name="accept"/>
+    </p>
+    <p>
+        <span>爱好：</span>
+        <label for="hobby_read">读书</label>
+        <input type="checkbox" id="hobby_read" value="read" name="hobby"/>
+        <label for="hobby_write">写作</label>
+        <input type="checkbox" id="hobby_write" value="write" name="hobby" />
+        <label for="hobby_sing">唱歌</label>
+        <input type="checkbox" id="hobby_sing" value="sing" name="hobby" />
+        <label for="hobby_dance">唱歌</label>
+        <input type="checkbox" id="hobby_dance" value="sing" name="hobby" />
+    </p>
+    <p>
+        <label for="experience">工作经历：</label>
+        <textarea name="experience" id="experience" cols="30" rows="10"></textarea>
+    </p>
+    <p>
+        <input class="submitbtn" type="submit" value="立即注册" />
+    </p>
+</form>
+<script src="cmd/sea.js"></script>
+<script>
+    seajs.config({
+        alias: {
+            'jquery': './jquery.js'
+        }
+    })
+
+    seajs.use("./cmd/main.js");
+</script>
+
+
+</body>
+</html>
