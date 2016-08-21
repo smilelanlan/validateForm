@@ -340,5 +340,12 @@ $(function(){
 
   ​
 
-  ​
+
+
+
+## demo示例
+
++ [普通页面](https://smilelanlan.github.io/validateForm/normal.html)
++ [cmd页面](https://smilelanlan.github.io/validateForm/cmd.html)
++ [amd页面](https://smilelanlan.github.io/validateForm/amd.html)
 
