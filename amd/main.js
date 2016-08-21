@@ -55,7 +55,7 @@ define(['jquery','amd/validateForm'],function($,ValidateForm){
         msg: {
             myname: {
                 required: "用户名不能为空",
-                reg:"用户名格式不对"
+                reg:"用户名请以chr开头"
             },
             phone: {
                 required: "手机号不能为空",
