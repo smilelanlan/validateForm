@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Validateform by smilelanlan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Validateform</h1>
+      <h2 class="project-tagline">表单验证组件</h2>
+      <a href="https://github.com/smilelanlan/validateForm" class="btn">View on GitHub</a>
+      <a href="https://github.com/smilelanlan/validateForm/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/smilelanlan/validateForm/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <blockquote>
+<h1>
+<a id="表单验证组件" class="anchor" href="#%E8%A1%A8%E5%8D%95%E9%AA%8C%E8%AF%81%E7%BB%84%E4%BB%B6" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>表单验证组件</h1>
+</blockquote>
+
+<p>表单验证组件</p>
+
+<h2>
+<a id="基本用法" class="anchor" href="#%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>基本用法</h2>
+
+<p>html代码</p>
+
+<pre><code>&lt;form id="myform" method="post"&gt;
+    &lt;p&gt;
+        &lt;label for="email"&gt;E-Mail：&lt;/label&gt;
+        &lt;input id="email" name="email" /&gt;
+    &lt;/p&gt;
+    &lt;p&gt;
+        &lt;input class="submitbtn" type="submit" value="立即注册" /&gt;
+    &lt;/p&gt;
+&lt;/form&gt;
+
+&lt;script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script src="dist/validateForm.js"&gt;&lt;/script&gt;
+</code></pre>
+
+<p>js代码</p>
+
+<pre><code>$(function(){
+    //创建实例
+    var myform = new ValidateForm({
+        wrap: '#myform',
+        rules:{
+            email:{
+                required: true,
+                reg: "email"
+            }
+        },
+        msg: {
+            email: {
+                required: "邮箱不能为空",
+                reg: "邮箱格式不正确"
+            }
+        },
+        validFieldSuc:function(value,ele){
+                var $parent=$(ele).parents("p");
+                var $tip=$parent.find(".tip");
+                if($tip.length&lt;1){
+                    $tip=$('&lt;span class="tip"&gt;&lt;/span&gt;');
+                    $parent.append($tip);
+                }
+                $tip.html("验证通过").css({"color":"green"});
+
+         },
+         validFieldFail:function(str,ele){
+                var $parent=$(ele).parents("p");
+                var $tip=$parent.find(".tip");
+                if($tip.length&lt;1){
+                    $tip=$('&lt;span class="tip"&gt;&lt;/span&gt;');
+                    $parent.append($tip);
+                }
+                $tip.html(str).css({"color":"red"});
+         }
+    })
+
+    $(".submitbtn").on("click",function(e){
+        if (e.preventDefault) {
+            e.preventDefault();
+        } else {
+            e.returnValue = false;
+        }
+        //调用表单验证方法，参数是一个对象，在cb上可自定义表单验证的回调函数
+        myform.valid({
+            cb:function (result) {
+                if(result.status){
+                    console.log("表单验证通过",result.data);
+                }else{
+                    console.log("表单验证失败",result.msg);
+                }
+            }
+        })
+    })
+})
+</code></pre>
+
+<h2>
+<a id="创建实例的option选项" class="anchor" href="#%E5%88%9B%E5%BB%BA%E5%AE%9E%E4%BE%8B%E7%9A%84option%E9%80%89%E9%A1%B9" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>创建实例的option选项</h2>
+
+<ul>
+<li><p>wrap : form表单的外部容器，值为css 选择器</p></li>
+<li>
+<p>rules : 表单验证规则，值为对象，对象的属性是表单元素的name值，对象属性的值还是一个对象</p>
+
+<ul>
+<li><p>required:该表单元素是否为必填项，值为布尔值</p></li>
+<li>
+<p>reg:该表单字段的验证规则，值可为字符串、正则、自定义函数</p>
+
+<ul>
+<li>
+<p>字符串:</p>
+
+<ol>
+<li>
+<p>内置校验规则：该组件内置的验证规有chinaChar（是否是汉字）、cardId（身份证验证）、phone（固定电话）、mobile（手机）、password（用户名）、email（邮箱）、num（是否为数字）、qq（qq号）、weixin（微信号）、empty（是否为空）可以直接使用</p>
+
+<pre><code>&lt;p&gt;
+ &lt;label for="email"&gt;E-Mail：&lt;/label&gt;
+ &lt;input id="email" name="email" /&gt;
+&lt;/p&gt;
+
+rules:{
+  email:{
+    required: true,
+    reg: "email"
+  }
+}
+</code></pre>
+
+<p>​</p>
+</li>
+<li>
+<p>添加自定义校验规则: 调用函数的addRule方法，来扩充校验规则，addRule方法的第一参数是新的校验规则名称，第二个参数是函数，函数的参数是表单元素的值，返回值为true或者false</p>
+
+<pre><code>&lt;p&gt;
+ &lt;label for="myname"&gt;用户名：&lt;/label&gt;
+ &lt;input id="myname" name="myname" /&gt;
+&lt;/p&gt;
+//添加新的校验规则，用户名已chr开头
+ValidateForm.addRule("chrName",function(v){
+  if(!v)return false;
+    var reg=/^chr/;
+    if(reg.test(v)){
+    return true;
+  }else{
+      return false;
+  }
+});
+
+rules: {
+  myname: {
+    required: true,
+    reg:"chrName"
+  }
+}
+</code></pre>
+</li>
+</ol>
+</li>
+<li>
+<p>正则：值可以为正则表达式</p>
+
+<pre><code>&lt;p&gt;
+ &lt;label for="phone"&gt;手机号：&lt;/label&gt;
+ &lt;input id="phone" name="phone" /&gt;
+&lt;/p&gt;
+
+rules:{
+  phone: {
+   required: true,
+   reg:/^1[3-9][0-9]\d{8}$/
+ }
+}
+</code></pre>
+</li>
+<li>
+<p>自定义函数:可自定义函数验证表单元素,函数的一个参数是当前表单元素的值,函数的返回值为true后者false</p>
+
+<pre><code>&lt;p&gt;
+  &lt;label for="experience"&gt;工作经历：&lt;/label&gt;
+  &lt;textarea name="experience" id="experience" cols="30" rows="10"&gt;&lt;/textarea&gt;
+&lt;/p&gt;
+
+rules:{
+  experience:{
+    required: true,
+    reg: function(v){
+      if(v.length&gt;5){
+          return true;
+      }else{
+          return false;
+      }
+    }
+  }
+}
+</code></pre>
+</li>
+</ul>
+</li>
+<li><p>minLength: 当表单元素为复选框时，可设置最少选择个数 </p></li>
+<li>
+<p>maxLength:当表单元素为复选框时，可设置最多选择个数</p>
+
+<pre><code>&lt;p&gt;
+  &lt;span&gt;爱好：&lt;/span&gt;
+  &lt;label for="hobby_read"&gt;读书&lt;/label&gt;
+  &lt;input type="checkbox" id="hobby_read" value="read" name="hobby"/&gt;
+  &lt;label for="hobby_write"&gt;写作&lt;/label&gt;
+  &lt;input type="checkbox" id="hobby_write" value="write" name="hobby" /&gt;
+  &lt;label for="hobby_sing"&gt;唱歌&lt;/label&gt;
+  &lt;input type="checkbox" id="hobby_sing" value="sing" name="hobby" /&gt;
+  &lt;label for="hobby_dance"&gt;唱歌&lt;/label&gt;
+  &lt;input type="checkbox" id="hobby_dance" value="sing" name="hobby" /&gt;
+&lt;/p&gt;
+
+//最少选择两个，最多选择3个
+rules:{
+  hobby: {
+    required: true,
+    minLength:2,
+    maxLength:3
+  }
+}
+
+</code></pre>
+</li>
+</ul>
+</li>
+<li>
+<p>msg:配置表单元素验证结果的提示文案和回调函数，值为对象，对象的属性是表单元素的name值，对象属性的值还是一个对象</p>
+
+<ul>
+<li><p>required:该表单元素值为空的提示文案，值为字符串</p></li>
+<li><p>reg:该表单元素正则校验失败的提示文案</p></li>
+<li><p>sucCb:该表单元素校验成功的回调，第一个参数为值，第二个参数为当前元素</p></li>
+<li>
+<p>failCb:该表单元素校验失败的回调，第一个参数为失败原因，第二个参数为当元素</p>
+
+<pre><code>msg:{
+  email: {
+    required: "邮箱不能为空",
+    reg: "邮箱格式不正确",
+    sucCb:function(value,ele){
+      var $parent=$(ele).parents("p");
+      var $icon=$parent.find(".icon");
+      if($icon.length&lt;1){
+        $icon=$('&lt;span class="icon"&gt;&lt;/span&gt;');
+        $parent.append($icon);
+      }
+      $icon.html("v").css({"color":"green"});
+    },
+    failCb:function(str,ele){
+      var $parent=$(ele).parents("p");
+      var $icon=$parent.find(".icon");
+      if($icon.length&lt;1){
+        $icon=$('&lt;span class="icon"&gt;&lt;/span&gt;');
+        $parent.append($icon);
+      }
+      $icon.html("x").css({"color":"red"});
+    }
+  }
+}
+</code></pre>
+
+<p>​</p>
+</li>
+</ul>
+</li>
+<li><p>validFieldSuc:通用表单元素校验成功回调，第一个参数为值，第二个参数为当前元素</p></li>
+<li><p>validfieldfail:通用表单元素校验失败回调，第一个参数为失败原因，第二个参数为当前元素</p></li>
+<li><p>onblur:是否为表单元素添加blur事件，值为true或者 false,默认为true</p></li>
+<li><p>onkeyup:是否为元素点击keyup事件，值为true后者 false,默认为false</p></li>
+</ul>
+
+<h2>
+<a id="方法" class="anchor" href="#%E6%96%B9%E6%B3%95" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>方法</h2>
+
+<ol>
+<li>
+<p>实例方法</p>
+
+<ul>
+<li>
+<p>valid(opt)</p>
+
+<p>表单提交之前，校验所有表单元素的值是否合法，opt是个对象</p>
+
+<ul>
+<li>
+<p>cb:表单校验结束的回调，参数是对象</p>
+
+<pre><code>{
+status:true,//值为true/false 校验成功或者失败
+data:{email:"1182661260@qq.com",name:"lilanlan"},//校验成功，表单提交的数据
+msg:"邮箱格式不正确"//校验失败，失败的原因
+}
+</code></pre>
+</li>
+<li><p>ignore:忽略校验的元素，值为忽略校验元素name的值</p></li>
+</ul>
+
+<pre><code>var myform = new ValidateForm({...});
+myform.valid({
+ ignore:"experience",
+cb:function (result) {
+ if(result.status){
+    console.log("表单验证通过",result.data);
+ }else{
+    console.log("表单验证失败",result.msg);
+ }
+}
+})
+</code></pre>
+</li>
+<li>
+<p>checkEle(ele)</p>
+
+<p>校验当个输入框的值是否合法，参数为表单元素的css选择器,返回值 是个对象</p>
+
+<pre><code>{
+status:true,//值为true/false 校验成功或者失败
+value:"我是一名前端开发人员",//校验成功，当前输入框的值
+msg:"不能少于5个值"，//校验失败，失败的原因
+}
+</code></pre>
+
+<pre><code>var myform = new ValidateForm({...});
+myform.checkEle("#experience");
+</code></pre>
+</li>
+<li>
+<p>checkRadioCheckbox(name)</p>
+
+<p>校验单选按钮或者多选框是否合法，参数为表单元素name的值，返回值是对象,同上</p>
+
+<pre><code>var myform = new ValidateForm({...});
+console.log(myform.checkRadioCheckbox("hobby"))
+
+//输出的值为
+{
+  status:true,//校验是否成功
+  value:['sing','dance']//校验成功，元素的值
+}
+</code></pre>
+
+<p>​</p>
+</li>
+</ul>
+</li>
+<li><p>函数方法</p></li>
+</ol>
+
+<ul>
+<li>
+<p>ValidateForm.addRule(name,fn)</p>
+
+<p>添加自定义校验规则,第一参数是新的校验规则名称，第二个参数是函数，函数的参数是表单元素的值，返回值为true或者false</p>
+
+<pre><code>//添加新的校验规则，用户名已chr开头
+ValidateForm.addRule("chrName",function(v){
+ if(!v)return false;
+   var reg=/^chr/;
+   if(reg.test(v)){
+   return true;
+ }else{
+    return false;
+ }
+});
+</code></pre>
+
+<p>​</p>
+
+<p>​</p>
+</li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/smilelanlan/validateForm">Validateform</a> is maintained by <a href="https://github.com/smilelanlan">smilelanlan</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
