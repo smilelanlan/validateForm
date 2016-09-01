@@ -1,226 +1,287 @@
+
 ;(function(window){
 
 
     function factory($){
-        var regs= {
-            //校验手机
-            name:function(v){
-                if(!v)return false;
-                var reg=/^[\u4E00-\u9FA5A-Za-z0-9]{2,50}$/g;
-                return this.run(v,reg);
-            },
-            name1:function(v){
-                if(!v)return false;
-                var reg=/^[a-zA-Z0-9\u4e00-\u9fa5]+$/g;
-                return this.run(v,reg);
-            },
-            contactCom:function(v){
-                if(!v)return false;
-                var reg=/^[a-zA-Z\u4e00-\u9fa5\s?]+$/g;
-                return this.run(v,reg);
-            },
-            contact:function(v){
-                if(!v)return false;
-                var reg=/^[a-zA-Z\u4e00-\u9fa5]+$/g;
-                return this.run(v,reg);
-            },
-            // 是否是汉字
-            chinaChar:function(v){
-                if(!v)return false;
-                var reg=/^[\u4e00-\u9fa5]+$/g;
-                return this.run(v,reg);
-            },
-            // 身份证号验证
-            cardId:function(v){
-                if(!v)return false;
-                var reg=/^(\d{15}$|^\d{18}$|^\d{17}(\d|X|x))$/;
-                return this.run(v,reg);
-            },
-            //校验固定电话
-            phone:function(v){
-                if(!v)return false;
-                // var reg = /0\d{2,3}-\d{5,9}|0\d{2,3}-\d{5,9}/;
-                var reg = /^(0[0-9]{2,3}\-?)?([2-9][0-9]{6,7})+(\-?[0-9]{1,5})?$/;  //3-4位区号，7-8位直播号码，1－5位分机号
-                return this.run(v,reg);
-            },
-            //校验工作地区ID  格式：34,398,1001
-            workPlaceId:function(v){
-                if(!v)return false;
-                var reg = /\d{2}[,，]\d{3}[,，]\d{4}/;
-                return this.run(v,reg);
-            },
-            //校验发布地区ID  格式：34,398
-            payPlaceId:function(v){
-                if(!v)return false;
-                var reg = /\d{2}[,，]\d{3}/;
-                return this.run(v,reg);
-            },
-            //校验特殊字符
-            punctuation:function(v){
-                if(!v)return false;
-                var reg = /^[\u4e00-\u9fa5a-z0-9]+$/i;
-                return this.run(v,reg);
-            },
-            mobile:function(v){
-                if(!v)return false;
-                var _emp=/^\s*|\s*$/g;
-                v=v.replace(_emp,"");
-                var _d=/^1[3-9][0-9]\d{8}$/g;
-                if(_d.test(v)){
-                    return true;
+        //DOM操作对象
+        var DOM={};
+        DOM.domToArray=function (eles){
+            try{
+                var a=Array.prototype.slice.call(eles,0);
+            }catch(e){
+                var a=[];
+                for(var i=0;i<eles.length;i++){
+                    a.push(eles[i]);
                 }
-                return false;
-            },
-            mobileAndEmail:function(v){
-                if(!v)return false;
-                var reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w{2,}/;
-                var reg2=/^1[3-9][0-9]\d{8}$/g
-                if(reg.test(v)||reg2.test(v)){
-                    return true;
-                }else{
-                    return false;
-                }
-            },
-            userName:function(v){
-                if(!v)return false;
-                //var reg=/(?!.*0x.*|^\d{6,20}$)^[a-zA-Z0-9_@.]{6,20}$/g;
-                var reg=/(?!^\d{6,20}$)^[a-zA-Z0-9_@.]{6,20}$/g;
-                return this.run(v,reg);
-            },
-            account:function(v){
-                if(!v)return false;
-                var reg=/^[a-zA-Z0-9_@.]{6,20}$/;
-                return this.run(v,reg);
-            },
-            //校验密码
-            password:function(v){
-                if(!v)return false;
-                var reg = /^([a-zA-Z0-9]|[*_#^@%$&\-=\+~!():;',.\]\[\{\}]){6,20}$/;
-                return this.run(v,reg);
-            },
-            //校验邮箱
-            email:function(v){
-                if(!v)return false;
-                var reg = /\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w{2,}/;
-                return this.run(v,reg);
-            },
-            sms:function(v){
-                if(!v)return false;
-                var reg = /^\d{4}$/;
-                return this.run(v,reg);
-            },
-            sms6:function(v){
-                if(!v)return false;
-                var reg = /^\d{6}$/;
-                return this.run(v,reg);
-            },
-            captch:function(v){
-                if(!v)return false;
-                var reg = /^[a-z0-9]{4}$/i;
-                return this.run(v,reg);
-            },
-            num:function(v){
-                if(!v)return false;
-                var reg = /^\d+$/;
-                return this.run(v,reg);
-            },
-            qq:function(v){
-                if(!v)return false;
-                var reg = /^[0-9]{5,10}$/;
-                return this.run(v,reg);
-            },
-            weixin:function(v){
-                if(!v)return false;
-                var reg = /^[a-zA-Z\d_]{5,}$/;
-                return this.run(v,reg);
-            },
-            //执行匹配
-            run:function(v,reg){
-                if(!v || !reg){return false;}
-                if(reg.test(v)){
-                    return true;
-                }
-                return false;
-            },
-            trim:function(v) {
-                v += "";
-                return v.replace(/(^\s+)|(\s+$)/g, "");
-            },
-            empty:function(v){
-                var reg=/^\s*$/g;
-                if(reg.test(v)){
-                    return true;
-                }
-                return false;
-            },
-            encnCut:function(str,len){
-                var char_length = 0;
-                for (var i = 0; i < str.length; i++){
-                    var son_str = str.charAt(i);
-                    encodeURI(son_str).length > 2 ? char_length += 1 : char_length += 0.5;
-                    if (char_length >= len){
-                        var sub_len = char_length == len ? i+1 : i;
-                        return str.substr(0, sub_len);
-                        break;
-                    }
-                }
-            },
-            encnLen:function(s){
-                var char_length = 0;
-                for (var i = 0; i < s.length; i++){
-                    var son_char = s.charAt(i);
-                    encodeURI(son_char).length > 2 ? char_length += 1 : char_length += 0.5;
-                }
-                return char_length;
-            },
-            //自动按长度截取
-            autocut:function(txt,length,type){
-                if(!length) return txt;
-                if(type!="ench"){
-                    return (txt.length <= length)? txt : txt.substring(0,length)
-                }else{
-                    var len = this.encnLen(txt)
-                    if(len <= length){
-                        return txt;
+            }
+            return a;
+
+        }
+        DOM.find=function(selector,context){
+            context=context||document;
+            if(context.nodeType==1||context.nodeType==9){
+                var reg=/^\s+|\s+$/g;
+                selector=selector.replace(reg,"");
+                var aselector=selector.split(",");
+                var eles=context.getElementsByTagName("*");
+                var all=[];
+                for(var i=0;i<aselector.length;i++){
+                    var curResult=bySelector(aselector[i],context);
+                    if(curResult.nodeType&&curResult.nodeType==1){
+                        all.push(curResult);
                     }else{
-                        return this.encnCut(txt,length);
+                        curResult=DOM.domToArray(curResult);
+                        all=all.concat(curResult);
                     }
                 }
+                return all;
+            }
+            function bySelector(selector,context){
+                var m = selector.match(/([#\.\[])([\w\W]+)/i);
+                var type, key, attrName, result;
+                if(m){
+                    if(m[1]=="."){
+                        type="class";
+                        key=m[2];
+                    }else if(m[1]=="#"){
+                        type="id";
+                        key=m[2];
+                    }else if(m[1]=='['){
+                        type='attr';
+                        m=m[2].match(/(\w+)=(\w+)/i);
+                        attrName=m[1];
+                        key=m[2];
+
+                    }
+                }else{
+                    type="tag";key= selector;
+                }
+
+                if(type=="class"){
+                    result=DOM.getElesByClass(key,context)
+                }else if(type=="id"){
+                    result =context.getElementById(key);
+                }else if(type=="attr"){
+                    result =DOM.getElesByAttribute(attrName,key,context);
+                }else if(type =="tag"){
+                    result = context.getElementsByTagName(key);
+                }
+                return result;
+            }
+        }
+
+        DOM.not=function(selector,eles){
+            var removeEles=DOM.find(selector);
+            for(var i=0,len=removeEles.length;i<len;i++){
+                contains(eles,removeEles[i]);
+            }
+            return eles;
+
+            function contains(arry,value){
+                for(var i=0;i<arry.length;i++){
+                    if(arry[i]==value){
+                        arry.splice(i,1);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+
+        DOM.getElesByAttribute=function(attrName,attrValue,context){
+            context=context||document;
+            if(context.nodeType!=1&&context.nodeType!=9){
+                throw new Error('第三个参数context错误!');
+            }
+            var eles=context.getElementsByTagName("*");
+            var a=[];
+            for(var i=0;i<eles.length;i++){
+                if(eles[i].getAttribute(attrName)==attrValue){
+                    a.push(eles[i]);
+                }
+            }
+            return a;
+        }
+        DOM.getElesByClass=function (strClassName,context){
+            if(typeof strClassName){
+                context=context||document;
+
+                if(context.nodeType==1||context.nodeType==9){
+                    if(context.getElementsByClassName)
+                        return context.getElementsByClassName(strClassName);
+                    var reg=/^\s+|\s+$/g;
+                    strClassName=strClassName.replace(reg,"");
+                    var aClass=strClassName.split(/\s+/);
+                    var eles=context.getElementsByTagName("*");
+                    for(var i=0;i<aClass.length;i++){
+                        eles=byClass(aClass[i],eles);
+                    }
+                    return eles;
+                }else{
+                    throw new Error("第二个参数类型错误");
+                }
+            }else{
+                throw new Error("第一个参数必需是一个字符串");
+            }
+
+
+            function byClass(strClassName,eles){
+                var reg=new RegExp("(^| )"+strClassName+"( |$)");
+                //var eles=document.getElementsByTagName("*");
+                var a=[];//把找到的放到这个数组里
+                for(var i=0,len=eles.length;i<len;i++){
+                    var ele=eles[i];
+                    if(reg.test(ele.className)){//5
+                        a.push(ele);
+                    }
+                }
+                return a;
+            }
+        }
+
+        DOM.getChecked=function(eles){
+            var arry=[];
+            for(var i=0,len=eles.length;i<len;i++){
+                if(eles[i].checked){
+                    arry.push(eles[i]);
+                }
+            }
+            return arry;
+        }
+
+        //处理事件的对象
+        var Ev={
+            on:function(ele,type,fn){
+                if(ele.attachEvent){
+                    //ele.attachEvent("on"+type,fn);
+                    if(!ele["aEvent"+type]){
+                        ele["aEvent"+type]=[];
+                        ele.attachEvent("on"+type,function(){Ev.run.call(ele)});//这儿只负责把run绑定在浏览器事件上
+                    }
+                    var a=ele["aEvent"+type];
+                    for(var i=0;i<a.length;i++){
+                        if(a[i]==fn)return ;
+                    }
+                    a.push(fn);
+
+                }else if(ele.addEventListener){
+                    ele.addEventListener(type,fn,false);
+                }
             },
-            xss:function(v){
-                if(!v)return false;
-                var reg = /<script[^>]*>[\s\S]*?<\/[^>]*script>/gi;
-                return this.run(v,reg);
+            off:function(ele,type,fn){
+                if(ele.detachEvent){
+                    var a=ele["aEvent"+type];
+                    for(var i=0;i<a.length;i++){
+                        if(a[i]==fn){
+                            a[i]=null;
+                            ele["tempEvent"][i]=null;
+                        };
+                    };
+                }else if(ele.removeEventListener){
+                    ele.removeEventListener(type,fn,false);
+                }
             },
-            xssCheck:function(list){
-                var flag=false;
-                var self=this;
-                $.each(list,function(k,v){
-                    flag=self.xss(v);
-                    if(flag){
-                        return false;
+            run:function(){
+                var e=window.event;
+                var a1=this["aEvent"+e.type];
+                e.target=e.srcElement;
+                e.pageX=(document.documentElement.scrollLeft||document.body.scrollLeft)+e.clientX;
+                e.pageY=(document.documentElement.scrollTop||document.body.scrollTop)+e.clientY;
+                if(!e.stopPropagation){
+                    e.stopPropagation=function(){e.cancelBubble=true;}
+                }
+                if(!e.preventDefault){
+                    e.preventDefault=function(){e.returnValue=false;};
+                }
+                if(a1){
+                    var a=this["tempEvent"]=a1.slice(0);//a1是真正的存储器，a是它的副本
+                }else{
+                    return;
+                }
+                for(var i=0;i<a.length;i++){
+                    if(typeof a[i]=="function"){
+                        a[i].call(this,e)
+                    }else {
+                        a.splice(i,1);
+                        i--;
                     }
 
-                })
-                return flag;
-            },
-            xssDomCheck:function(wrap){
-                var self=this;
-                wrap=wrap||$("body");
-                var flag=false;
-                var textE=wrap.find("input[type=text]");
-                var textareaE=wrap.find("textarea");
-                var list=[].concat.call(textareaE,textE);
-                //console.log(list);
-                $.each(list,function(k,v){
-                    flag=self.xss(v.val());
-                    if(flag){
-                        return false;
-                    }
-                })
-                return flag;
+                }
             }
         };
+        //工具对象
+        var Util={};
+
+        Util.isPlainObject=function(obj){
+            var hasOwn = Object.prototype.hasOwnProperty;
+            if(!obj || Util.type(obj)!=="object" || obj.nodeType || Util.isWindow(obj)){
+                return false;
+            }
+
+            if(obj.constructor && !hasOwn.call(obj,"constructor") && !hasOwn.call(obj.constructor.prototype,"isPrototypeOf") ){
+                console.log('constructor');
+                return false;
+            }
+
+            var key;
+            for(key in obj){
+
+            }
+            return key === undefined || hasOwn.call(obj,key);
+        }
+
+        Util.isArray=function(obj){
+            return Util.type(obj)==='array';
+        }
+
+        Util.isWindow=function(obj){
+            return obj && typeof obj == "object" && "setInterval" in obj;
+        }
+
+        Util.type=function(obj){
+            var toString=Object.prototype.toString;
+
+            var class2type={
+                '[object Boolean]' : 'boolean',
+                '[object Number]' : 'number',
+                '[object String]' : 'string',
+                '[object Function]' : 'function',
+                '[object Array]' : 'array',
+                '[object Date]' : 'date',
+                '[object RegExp]' : 'regExp',
+                '[object Object]' : 'object'
+
+            }
+            return obj==null?String(obj):class2type[toString.call(obj)]||"object";
+        }
+
+
+        Util.extend=function(deep,target,option){
+            var copyIsArray;
+            for(name in option){
+                var src= target[name];
+                var copy = option[name];
+                if(target=== copy){continue;}
+
+                if(deep && copy && (Util.isPlainObject(copy) || (copyIsArray=Util.isArray(copy)))){
+                    if(copyIsArray){
+                        copyIsArray=false;
+                        clone= src && Util.isArray(src)?src:[];
+                    }else{
+                        clone=src && Util.isPlainObject(src)?src:{};
+                    }
+
+                    target[name]=Util.extend(deep,clone,copy);
+                }else{
+                    target[name]= copy;
+                }
+            }
+
+            return target;
+
+        }
+
 
         function isRegExp(o) {
             return Object.prototype.toString.call(o) === '[object RegExp]';
@@ -228,17 +289,28 @@
         function isFunction(o) {
             return Object.prototype.toString.call(o) === '[object Function]';
         }
+        function isEmpty(v){
+            var reg=/^\s*$/g;
+            if(reg.test(v)){
+                return true;
+            }
+            return false;
+        }
+        function run(v,reg){
+            if(!v || !reg){return false;}
+            if(reg.test(v)){
+                return true;
+            }
+            return false;
+        }
+
         var ValidateForm=function(opt){
             this.opt={
                 wrap:'',
-                rules:null,
-                msg:null,
-                onblur:true,
-                onkeyup:false
+                fields:null
             };
-            $.extend(true,this.opt,opt);
-            this.wrap=$(this.opt.wrap);
-
+            Util.extend(true,this.opt,opt);
+            this.wrap=DOM.find(this.opt.wrap)[0];
             this.init();
         }
         ValidateForm.prototype={
@@ -248,32 +320,50 @@
             },
             bindEvent:function(){
                 var self=this;
-                var $eles=this.eles;
-                if(this.opt.onblur){
-                    $eles.on("blur",function(){
-                        self.checkEle($(this));
-                    })
+                var texts=this.eles;
+
+                for(var i=0,length=texts.length;i<length;i++){
+                    bindText(texts[i]);
                 }
-                if(this.opt.onkeyup){
-                    $eles.on("keyup",function(){
-                        self.checkEle($(this));
-                    })
+
+
+                function bindText(ele){
+                    var fieldName=ele.getAttribute("name");
+                    var curField=self.opt.fields[fieldName];
+                    if(curField&&curField.onBlur){
+                        Ev.on(ele,"blur",function(e){
+                            curField.onBlur.call(this,e)
+                        });
+                    }
+
+                    if(curField&&curField.onFocus){
+                        Ev.on(ele,"focus",function(e){
+                            curField.onFocus.call(this,e);
+                        });
+                    }
+                    if(curField&&curField.onKeyup){
+                        Ev.on(ele,"keyup",function(e){
+                            curField.onKeyup.call(this,e);
+                        });
+                    }
                 }
+
             },
             getEles:function(){
-                this.eles=this.wrap.find('input,textarea').not('[type=radio],[type=checkbox],[type=submit],[type=button]');
-                // console.log(this.eles);
-                this.radios=this.getFieldName(this.wrap.find('input[type=radio]'));
-                this.checkboxs=this.getFieldName(this.wrap.find('input[type=checkbox]'));
+                this.eles=DOM.find('input,textarea',this.wrap);
+                this.eles=DOM.not('[type=radio],[type=checkbox],[type=submit],[type=button]', this.eles);
+                this.radios=this.getFieldName(DOM.find('input[type=radio]',this.wrap));
+                this.checkboxs=this.getFieldName(DOM.find('input[type=checkbox]',this.wrap));
                 return this.eles;
             },
             getFieldName:function(eles){
                 var self=this;
                 var names=[];
                 for(var i=0;i<eles.length;i++){
-                    var item=eles[i];
-                    if(!self.contains(names,$(item).attr("name"))){
-                        names.push($(item).attr("name"));
+                    var name=eles[i].getAttribute("name");
+
+                    if(!self.contains(names,name)){
+                        names.push(name);
                     }
                 }
                 return names;
@@ -288,174 +378,185 @@
                 return false;
             },
             valid:function(opt){
-                var cb=opt.cb||function(){};
-                var ignore=opt.ignore||null;
+                var ignore=opt&&opt.ignore||null;
                 var result=this.checkForm(ignore);
-                if(result.status){
-                    result.data=this.getFormJson(this.opt.wrap);
-                    cb(result);
-                }else{
-                    cb(result);
-                }
+                return result;
             },
             checkForm:function(ignore){
-                function getEles(eles,ignore){
-                    if(ignore){
-                        var newEles=eles.filter(function() {
-                            return $(this).attr("name") != ignore;
-                        })
-                        return newEles;
-                    }else{
-                        return eles;
-                    }
-
-                }
-                function getRadioCheckbox(arry,ignore){
+                var self=this;
+                function getEles(array,ignore,type){
                     if(ignore){
                         var temArray=[];
-                        for(var i=0;i<arry.length;i++){
-                            if(arry[i]!=ignore){
-                                temArray.push(arry[i]);
+                        for(var i=0;i<array.length;i++){
+                            if(type=="radio" || type=="checkbox"){
+                                //单选或者复选框
+                                if(array[i]!=ignore){
+                                    temArray.push(array[i]);
+                                }
+                            }else{
+                                //普通输入框
+                                if(array[i].getAttribute("name")!=ignore){
+                                    temArray.push(array[i]);
+                                }
                             }
                         }
                         return temArray;
                     }else{
-                        return arry;
+                        return array;
                     }
 
                 }
 
-                var eles=getEles(this.eles,ignore);
-                var flag=true;
-                for(var i=0,length=eles.length;i<length;i++){
-                    var result=this.checkEle(eles[i]);
-                    if(!result.status){
-                        return result;
+                function check(eles,ignore,type){
+                    var eles=getEles(eles,ignore,type);
+                    var flag=true;
+                    for(var i=0,length=eles.length;i<length;i++){
+                        var result=self.checkField(eles[i],type);
+                        if(!result.status){
+                            return false;
+                        }
                     }
-                }
-                var radios=getRadioCheckbox(this.radios,ignore);
-                for(var i=0,length=radios.length;i<length;i++){
-                    var result=this.checkRadioCheckbox(radios[i]);
-                    if(!result.status){
-                        return result;
-                    }
-                }
-                var checkboxs=getRadioCheckbox(this.checkboxs,ignore);
-                for(var i=0,length=checkboxs.length;i<length;i++){
-                    var result=this.checkRadioCheckbox(checkboxs[i]);
-                    if(!result.status){
-                        return result;
-                    }
-                }
-                return {status:true};
 
+                    return true;
+                }
 
-            },
-            checkRadioCheckbox:function(field){
-                var self=this;
-                var rule=this.opt.rules[field];
-                var msg=this.opt.msg[field];
-                var checkedRadio=this.wrap.find('input[name='+field+']:checked');
-                var ele=this.wrap.find('input[name='+field+']')[0];
-                var sucCb=msg&&msg.sucCb?msg.sucCb:null;
-                var failCb=msg&&msg.failCb?msg.failCb:null;
-                if(!rule) return {status:true};
-                var minLength=rule.minLength?rule.minLength:null;
-                var maxLength=rule.maxLength?rule.maxLength:null;
-
-                if(rule["required"]){
-                    if( checkedRadio.length<1){
-                        self.showError(msg["required"],ele,failCb);
-                        return {status:false,msg:msg["required"]};
-                    }
-                }
-                if(minLength&&checkedRadio.length<minLength){
-                    self.showError(msg["minLength"],ele,failCb);
-                    return {status:false,msg:msg["minLength"]};
-                }
-                if(maxLength&&checkedRadio.length>maxLength){
-                    self.showError(msg["maxLength"],ele,failCb);
-                    return {status:false,msg:msg["maxLength"]};
-                }
-                var value=null;
-                if($(ele).attr("type")=="radio"){
-                    value=checkedRadio.val();
+                if(check(this.eles,ignore,"text")&&check(this.radios,ignore,"radio")&&check(this.checkboxs,ignore,"checkbox")){
+                    return true;
                 }else{
-                    value=[];
-                    checkedRadio.each(function(){
-                        value.push($(this).val());
-                    })
+                    return false;
                 }
-                this.hideError(value,ele,sucCb);
-                return {status:true,value:value};
+
             },
-            checkEle:function(ele,notip){
+            checkField:function(ele,fieldType,notip){
                 var flag=true;
                 var error="";
-                var $ele=$(ele);
+                var fieldName="";
                 var self=this;
-                var field=$ele.attr("name");
-                var rule=this.opt.rules[field];
-                var msg=this.opt.msg[field];
-                var sucCb=msg&&msg.sucCb?msg.sucCb:null;
-                var failCb=msg&&msg.failCb?msg.failCb:null;
-                var value=$ele.val();
-                if(!rule) return {status:true};
-                if(regs.empty(value)){
-                    if(rule["required"]&&msg["required"]){
+
+                if(fieldType=="radio"||fieldType=="checkbox"){
+                    fieldName=ele;
+                }else{
+                    fieldName=ele.getAttribute("name");
+                }
+
+                var curField=this.opt.fields[fieldName];
+
+                if(!curField) return {status:true};
+
+                var curRule=curField.rule?curField.rule:curField.shortcutRule?curField.shortcutRule:null;
+
+                var regs=ValidateForm.regs?ValidateForm.regs:{};
+
+                var emptyTip= curField["emptyTip"];
+                var errorTip=curField["errorTip"];
+
+                var sucCb=curField.onSuccess?curField.onSuccess:null;
+                var failCb=curField.onFailed?curField.onFailed:null;
+
+
+
+                if(fieldType=="radio"||fieldType=="checkbox"){
+                    //单选按钮或者复选框传ele是name值
+                    var checkedEles=DOM.getChecked(DOM.find('input[name='+fieldName+']',this.wrap));
+                    ele=DOM.find('input[name='+fieldName+']',this.wrap)[0];
+                }
+
+
+                var value=getValue(ele,fieldType);
+
+                function getValue(ele,fieldType){
+                    var temArray=[];
+                    if(fieldType=="radio"){
+                        if(checkedEles.length>0){
+                            return checkedEles[0].value;
+                        }else{
+                            return "";
+                        }
+                    }else if(fieldType=="checkbox"){
+                        for(var i=0;i<checkedEles.length;i++){
+                            temArray.push(checkedEles[i].value);
+                        }
+                        return temArray;
+                    }else{
+                        return ele.value;
+                    }
+
+                }
+
+                function validEmpty(value){
+                    if(fieldType=="checkbox"){
+                        if(value.length<1){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    }else{
+                        return isEmpty(value);
+
+                    }
+                }
+
+                if(validEmpty(value)){
+                    if(curField["required"]){
                         //不能为空
                         if(!notip){
-                            self.showError(msg["required"],ele,failCb);
+                            self.showError(emptyTip,ele,failCb);
                         }
-                        error=msg["required"];
+                        error=emptyTip;
                         flag=false;
                     }else{
                         flag=true;
-                        this.hideError($ele.val(),ele,sucCb);
+                        this.hideError(value,ele,sucCb);
                     }
                 }else{
-                    if(rule["reg"]){
-                        if(typeof rule["reg"] == "string"){
-                            if(!regs[rule["reg"]](value)){
-                                //正则不匹配
-                                if(msg['reg']){
-                                    if(!notip){
-                                        self.showError(msg['reg'],ele,failCb);
+                    if(curRule){
+                        if(typeof curRule == "string"){
+                            if(regs[curRule]){
+                                if(!regs[curRule](value)){
+                                    //正则不匹配
+                                    if(errorTip){
+                                        if(!notip){
+                                            self.showError(errorTip,ele,failCb);
+                                        }
+                                        error=errorTip;
+                                        flag=false;
                                     }
-                                    error=msg['reg'];
-                                    flag=false;
+                                }else{
+                                    flag=true;
+                                    this.hideError(value,ele,sucCb);
                                 }
                             }else{
-                                flag=true;
-                                this.hideError($ele.val(),ele,sucCb);
+                                flag=false;
+                                error="暂无"+curRule+"校验方法";
+                                self.showError(error,ele,failCb);
                             }
-                        }else if(isRegExp(rule["reg"])){
-                            if(!regs.run(value,rule["reg"])){
+                        }else if(isRegExp(curRule)){
+                            if(!run(value,curRule)){
                                 //正则不匹配
-                                if(msg['reg']){
+                                if(errorTip){
                                     if(!notip){
-                                        self.showError(msg['reg'],ele,failCb);
+                                        self.showError(errorTip,ele,failCb);
                                     }
-                                    error=msg['reg'];
+                                    error=errorTip;
                                     flag=false;
                                 }
                             }else{
                                 flag=true;
-                                this.hideError($ele.val(),ele,sucCb);
+                                this.hideError(value,ele,sucCb);
                             }
-                        }else if(isFunction(rule["reg"])){
-                            if(!rule["reg"](value)){
+                        }else if(isFunction(curRule)){
+                            if(!curRule(value)){
                                 //正则不匹配
-                                if(msg['reg']){
+                                if(errorTip){
                                     if(!notip){
-                                        self.showError(msg['reg'],ele,failCb);
+                                        self.showError(errorTip,ele,failCb);
                                     }
-                                    error=msg['reg'];
+                                    error=errorTip;
                                     flag=false;
                                 }
                             }else{
                                 flag=true;
-                                this.hideError($ele.val(),ele,sucCb);
+                                this.hideError(value,ele,sucCb);
                             }
                         }else{
                             flag=false;
@@ -463,63 +564,40 @@
                             self.showError("暂无此校验方法",ele,failCb);
                         }
 
+
+
                     }else{
                         flag=true;
-                        this.hideError($ele.val(),ele,sucCb);
+                        this.hideError(value,ele,sucCb);
                     }
+
                 }
 
 
                 return {
                     status:flag,
-                    value:$ele.val(),
+                    value:value,
                     msg:error
                 }
 
             },
-            removeRule:function(field){
-                if(this.opt.rules[field]){
-                    this.opt.rules[field]=null;
-                }
-            },
             showError:function(str,ele,sucCb){
-                this.opt.validFieldFail&&this.opt.validFieldFail(str,ele);
-                /*this.popover.setMsg({str:str,ele:ele});*/
                 sucCb&&sucCb(str,ele);
+
             },
             hideError:function(val,ele,failCb){
-                this.opt.validFieldSuc&&this.opt.validFieldSuc(val,ele);
                 failCb&&failCb(val,ele);
-                /* this.popover.hide();*/
-            },
-            getFormJson:function(form){
-                var obj={};
-                var arr =$(form).serializeArray();
-
-                $.each(arr,function(index,item){
-                    var key=item.name;
-                    var value=item.value;
-                    if(obj[key]){
-                        if(!obj[key].push){
-                            obj[key]=[obj[key]];
-                        }
-                        obj[key].push(value||'');
-                    }else{
-                        obj[key]= value || '';
-                    }
-                })
-                return obj;
             }
-
-
         }
 
         ValidateForm.addRule=function(name,fn){
+            var regs=ValidateForm.regs?ValidateForm.regs:{};
             if(!regs[name]) {
                 regs[name] = fn;
             }
         }
 
+        window.ValidateForm=ValidateForm;
         return ValidateForm;
     }
 
